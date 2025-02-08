@@ -10,6 +10,7 @@ export const GET_PRODUCTS = gql`
       description
       image_url
       created_at
+      sales
     }
   }
 `;
