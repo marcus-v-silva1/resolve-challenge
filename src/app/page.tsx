@@ -4,9 +4,77 @@ import { useQuery } from "@apollo/client";
 import { GET_PRODUCTS } from "../utils/FetchProducts";
 import Link from "next/link";
 import { useState } from "react";
-import { Pagination, Container, Card, CardMedia, CardContent, Typography, Grid, Button, Select, MenuItem } from "@mui/material";
+import { Pagination, Container, Card, CardMedia, CardContent, Typography, Grid, Button, Select, MenuItem, CircularProgress } from "@mui/material";
 import { useSearch } from "../context/SearchContext";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { BarHome } from "@/utils/Icons";
+import styled from "styled-components";
+
+
+const Text300 = styled(Typography)`
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  color: #41414D;
+  font-family: Saira;
+`;
+
+const Text600 = styled(Typography)`
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  color: #41414D;
+  font-family: Saira;
+`;
+
+const DivPagination = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+`;
+
+const Div1 = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: center;
+    max-height: 300;
+  }
+  `;
+
+
+const Div2 = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: center;
+    max-height: 300;
+  }
+  `;
+
+const Div3 = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: Saira;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  color: #41414D;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: center;
+    max-height: 300;
+  }
+  `;
 
 interface Product {
   id: string;
@@ -27,7 +95,10 @@ export default function Home() {
   const [sortOption, setSortOption] = useState("goods");
   const productsPerPage = 12;
 
-  if (loading) return <p>Carregando produtos...</p>;
+  if (loading) return (
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
+    <CircularProgress size={100} />;
+  </div>);
   if (error) return <p>Erro ao carregar produtos: {error.message}</p>;
 
   const filteredProducts = data.allProducts.filter((product: Product) => {
@@ -63,27 +134,15 @@ export default function Home() {
 
   return (
     <Container sx={{ py: 4 }}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between"}}>
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "center"}}>
+      <Div1 style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between"}}>
+        <Div2 style={{ display: "flex", gap: "1rem", justifyContent: "center"}}>
           {[ 
             { label: "Todos os produtos", value: null },
             { label: "Camisas", value: "t-shirts" },
             { label: "Canecas", value: "mugs" },
           ].map(({ label, value }) => (
-            <div
+            <Div3
               key={value}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "Saira",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "22px",
-                letterSpacing: "0%",
-                color: "#41414D",
-              }}
             >
             <Button
               variant="text"
@@ -105,12 +164,12 @@ export default function Home() {
               </div>
             </Button>
               
-            </div>
+            </Div3>
           ))}
-        </div>
+        </Div2>
 
 
-        <Select
+        <Select 
           variant="standard"
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
@@ -137,8 +196,8 @@ export default function Home() {
         </Select>
 
 
-      </div>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "2rem" }}>
+      </Div1>
+      <DivPagination>
         <br/>
         <Pagination
           count={totalPages}
@@ -154,7 +213,7 @@ export default function Home() {
           }}
           shape="rounded"
         />
-      </div>
+      </DivPagination>
 
       <Grid container spacing={4}>
         {paginatedProducts.length > 0 ? (
@@ -163,11 +222,9 @@ export default function Home() {
                 <Card sx={{backgroundColor: "#FFFFFF",boxShadow: 0 }}>
                   <CardMedia component="img" height={300} width={256} image={product.image_url} alt={product.name} />
                   <CardContent sx={{height: 78, width: 256}}>
-                    <Typography style={{ fontFamily: "Saira", fontWeight: "300", fontSize: "16px", lineHeight: "22px", letterSpacing: "0%", color: "#41414D"}}>{product.name}</Typography>
-                    <svg width="228" height="1" viewBox="0 0 228 1" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M228 0.99998L8.74228e-08 1L0 0L228 -1.99324e-05L228 0.99998Z" fill="#DCE2E6"/>
-                    </svg>
-                    <Typography style={{ fontFamily: "Saira", fontWeight: "600", fontSize: "16px", lineHeight: "21px", letterSpacing: "0%", color: "#41414D"}}>R$ {(product.price_in_cents / 100).toFixed(2)}</Typography>
+                    <Text300>{product.name}</Text300>
+                    <BarHome color="#DCE2E6" />
+                    <Text600>R$ {(product.price_in_cents / 100).toFixed(2)}</Text600>
                   </CardContent>
                 </Card>
             </Grid>
@@ -179,7 +236,7 @@ export default function Home() {
         )}
       </Grid>
 
-       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "2rem" }}>
+       <DivPagination>
         <br/>
         <Pagination
           count={totalPages}
@@ -195,7 +252,7 @@ export default function Home() {
           }}
           shape="rounded"
         />
-      </div>
+      </DivPagination>
     </Container>
   );
 }
